@@ -212,7 +212,6 @@ export default function App() {
           </div>
         </section>
 
-        <p className="milestone-note">Milestone 12 · Production configuration · Temporary document processing</p>
       </section>
       {translationProvider === 'gemini' && (
         <aside className="privacy-notice" aria-label="Gemini data use notice">

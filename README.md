@@ -132,7 +132,3 @@ Bamini is a legacy font encoding, so the DOCX stores its Tamil text in Bamini ch
 ## Tests
 
 From `backend/`, run the service tests with `python -m unittest discover -s tests`. These use a stub translation provider and do not need Ollama.
-
-## Next milestone
-
-Milestone 13 prepares the repository and README for deployment. Fixed-position page reconstruction is intentionally out of scope.
