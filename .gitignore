@@ -1,0 +1,14 @@
+﻿node_modules/
+dist/
+.venv/
+__pycache__/
+*.py[cod]
+.env
+.env.*
+!.env.example
+uploads/*
+!uploads/.gitkeep
+outputs/*
+!outputs/.gitkeep
+.pytest_cache/
+.coverage
