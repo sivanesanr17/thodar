@@ -101,7 +101,7 @@ def render_translated_docx(document: StructuredDocument, output_path: Path,
                     max(8, paragraph.paragraph_format.space_before.pt or 0)
                 )
 
-            append_translated_text(paragraph, text, target_language)
+            append_translated_text(paragraph, text)
             for run in paragraph.runs:
                 run.font.size = Pt(14 if element.type == "heading" else 11)
                 if element.type == "heading":

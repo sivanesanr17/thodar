@@ -43,7 +43,7 @@ class TamilTranslationProvider(RecordingProvider):
 
 @unittest.skipIf(fitz is None, "PyMuPDF is required for PDF translation tests")
 class PdfTranslationTests(unittest.TestCase):
-    def test_tamil_paragraphs_use_bamini_and_keep_line_breaks(self):
+    def test_tamil_paragraphs_keep_unicode_and_line_breaks(self):
         from app.models.document import DocumentElement, DocumentPage, StructuredDocument
         from app.services.pdf_docx_renderer import render_translated_docx
 
@@ -61,7 +61,8 @@ class PdfTranslationTests(unittest.TestCase):
         paragraph = output.paragraphs[0]
         self.assertIn("\n", paragraph.text)
         self.assertIn("<w:br", paragraph._p.xml)
-        self.assertTrue(any(run.font.name == "Bamini" for run in paragraph.runs))
+        self.assertTrue(any("\u0b80" <= char <= "\u0bff" for char in paragraph.text))
+        self.assertFalse(any(run.font.name == "Bamini" for run in paragraph.runs))
 
     def test_two_column_reading_order_is_column_first(self):
         from app.models.document import DocumentElement, DocumentPage
@@ -138,7 +139,7 @@ class PdfTranslationTests(unittest.TestCase):
         self.assertTrue(element.font_name)
         document.close()
 
-    def test_pdf_endpoint_returns_docx_with_bamini_tamil_text(self):
+    def test_pdf_endpoint_returns_docx_with_unicode_tamil_text(self):
         source = fitz.open()
         source.new_page(width=420, height=620).insert_text(
             (50, 70), "A short paragraph for translation."
@@ -158,8 +159,8 @@ class PdfTranslationTests(unittest.TestCase):
         self.assertIn("source_translated.docx", response.headers["content-disposition"])
         from docx import Document
         translated = Document(io.BytesIO(response.content))
-        self.assertIn("jkpo;ehL muR", translated.paragraphs[0].text)
-        self.assertTrue(any(run.font.name == "Bamini" for run in translated.paragraphs[0].runs))
+        self.assertTrue(any("\u0b80" <= char <= "\u0bff" for char in translated.paragraphs[0].text))
+        self.assertFalse(any(run.font.name == "Bamini" for run in translated.paragraphs[0].runs))
         self.assertFalse(translated.paragraphs[0]._p.xpath(".//w:drawing"))
 
 

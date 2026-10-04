@@ -1,6 +1,6 @@
 # Thodar — Tamil ↔ English Document Translator
 
-Thodar translates Tamil and English DOCX files and PDF documents. PDF uploads return a flowing Word document; scanned pages use Tesseract OCR, and Tamil output uses Bamini encoding.
+Thodar translates Tamil and English DOCX files and PDF documents. PDF uploads return a flowing Word document; scanned pages use Tesseract OCR, and Tamil output is stored as Unicode Tamil.
 
 ## Current features
 
@@ -107,11 +107,11 @@ Accepts the same multipart fields with a PDF as input and always returns a trans
 - Detects text, scanned, mixed, and empty PDFs using selectable text and page-sized image coverage.
 - Extracts selectable text blocks with bounding boxes, translates blocks as units, and caches repeated text within the document.
 - Sorts extracted/OCR text into reading order and creates a reflowable Word document with readable paragraph spacing and line breaks.
-- Tamil output is converted to Bamini legacy character encoding and uses the Bamini font. The receiving computer needs a Bamini font installed.
+- Tamil output is stored as standard Unicode Tamil. The receiving computer needs a Tamil-compatible font.
 - Scanned pages are rendered one at a time and passed to the provider-independent OCR interface. Tesseract uses automatic page segmentation and returns paragraph text, confidence, page number, and bounding boxes.
 - Low-confidence OCR blocks are excluded; if a scanned page has no confident text, the request fails instead of translating uncertain text.
 
-Bamini is a legacy font encoding, so the DOCX stores its Tamil text in Bamini character codes. The receiving computer needs the Bamini font installed. The conversion mapping is based on the [MIT-licensed Unicode-to-Bamini converter](https://github.com/Pakeetharan/unicode-bamini-converter).
+Legacy Bamini-encoded text extracted from a PDF is not currently decoded before translation. Such PDFs may produce incorrect translations; use a Unicode Tamil PDF or a scanned PDF that can be OCRed as Tamil.
 
 ## OCR pipeline
 

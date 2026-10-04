@@ -195,7 +195,7 @@ async def translate_pdf_file(
                     detection=detection,
                 )
             except OcrProviderError as exc:
-                logger.warning("PDF OCR is unavailable or failed (%s)", type(exc).__name__)
+                logger.warning("PDF OCR is unavailable or failed (%s): %s", type(exc).__name__, exc)
                 raise HTTPException(status_code=503, detail=str(exc)) from exc
             except ValueError as exc:
                 if str(exc) == "no_extractable_text":
