@@ -10,6 +10,7 @@ except ImportError:
 
 from app.services.translation_service import TranslationProvider, TranslationUnavailable
 from app.models.document import StructuredDocument
+from app.services.bamini_input import decode_bamini_if_present
 from app.services.pdf_layout import extract_pdf_layout
 from app.services.pdf_docx_renderer import render_translated_docx
 from app.models.pdf_detection import PdfDetectionResult
@@ -39,12 +40,18 @@ async def translate_pdf_to_file(document: fitz.Document, provider: TranslationPr
             document, structured_document, detection, ocr_provider, source_language
         )
 
-    source_texts = [
-        element.original_text
-        for page in structured_document.pages
-        for element in page.elements
-        if element.type != "image" and _eligible(element.original_text)
-    ]
+    translation_inputs: dict[int, str] = {}
+    source_texts: list[str] = []
+    for page in structured_document.pages:
+        for element in page.elements:
+            if element.type == "image":
+                continue
+            text = element.original_text
+            if source_language == "ta":
+                text = decode_bamini_if_present(text, element.font_name)
+            translation_inputs[id(element)] = text
+            if _eligible(text):
+                source_texts.append(text)
     if not source_texts:
         raise ValueError("no_extractable_text")
     unique_texts = list(dict.fromkeys(source_texts))
@@ -66,7 +73,8 @@ async def translate_pdf_to_file(document: fitz.Document, provider: TranslationPr
         for element in page.elements:
             if element.type == "image":
                 continue
-            element.translated_text = translations.get(element.original_text, element.original_text)
-            translated_count += element.original_text in translations
+            translation_text = translation_inputs.get(id(element), element.original_text)
+            element.translated_text = translations.get(translation_text, element.original_text)
+            translated_count += translation_text in translations
     render_translated_docx(structured_document, output_path, target_language)
     return translated_count

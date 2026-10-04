@@ -111,7 +111,7 @@ Accepts the same multipart fields with a PDF as input and always returns a trans
 - Scanned pages are rendered one at a time and passed to the provider-independent OCR interface. Tesseract uses automatic page segmentation and returns paragraph text, confidence, page number, and bounding boxes.
 - Low-confidence OCR blocks are excluded; if a scanned page has no confident text, the request fails instead of translating uncertain text.
 
-Legacy Bamini-encoded text extracted from a PDF is not currently decoded before translation. Such PDFs may produce incorrect translations; use a Unicode Tamil PDF or a scanned PDF that can be OCRed as Tamil.
+Tamil PDF blocks identified as legacy Bamini text are converted to Unicode before translation. Detection uses the embedded font name when available and a conservative text-pattern check otherwise. Scanned PDFs recognized by Tesseract already produce Unicode Tamil.
 
 ## OCR pipeline
 

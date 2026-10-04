@@ -43,6 +43,22 @@ class TamilTranslationProvider(RecordingProvider):
 
 @unittest.skipIf(fitz is None, "PyMuPDF is required for PDF translation tests")
 class PdfTranslationTests(unittest.TestCase):
+    def test_decodes_bamini_text_before_translation(self):
+        document = fitz.open()
+        document.new_page(width=420, height=620).insert_text(
+            (50, 70), "jpz;Lf;fy; khtl;l fhty; fz;fhzpg;ghsu;"
+        )
+        provider = RecordingProvider()
+
+        with tempfile.TemporaryDirectory() as directory:
+            output_path = Path(directory) / "translated.docx"
+            asyncio.run(
+                translate_pdf_to_file(document, provider, "ta", "en", output_path)
+            )
+
+        self.assertEqual(provider.calls[0][0], "திண்டுக்கல் மாவட்ட காவல் கண்காணிப்பாளர்")
+        document.close()
+
     def test_tamil_paragraphs_keep_unicode_and_line_breaks(self):
         from app.models.document import DocumentElement, DocumentPage, StructuredDocument
         from app.services.pdf_docx_renderer import render_translated_docx
